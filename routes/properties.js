@@ -4,8 +4,8 @@ const Prometheus = require('prom-client')
 
 const PrometheusMetrics = {
   requestCounter: new Prometheus.Counter({
-    name: 'throughput_users',
-    help: 'The number of users requests served',
+    name: 'throughput_properties',
+    help: 'The number of properties requests served',
   })
 }
 
