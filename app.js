@@ -5,18 +5,19 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+/* var usersRouter = require('./routes/users');
+var propertiesRouter = require('./routes/properties'); */
+var apiRouter = require('./routes/api');
 var metricsRouter = require('./routes/metrics');
-var propertiesRouter = require('./routes/properties');
 
-const Prometheus = require('prom-client')
+/* const Prometheus = require('prom-client')
 
 const PrometheusMetrics = {
   requestCounter: new Prometheus.Counter({
     name: 'throughput',
     help: 'The number of requests served',
   })
-}
+} */
 
 var app = express();
 
@@ -31,25 +32,21 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use((req, res, next) => {
-  console.log(req.url)
-  if(req.url != '/metrics'){
-    PrometheusMetrics.requestCounter.inc()
-  }
-  next()
+  req.requestTime = Math.floor(Date.now() / 1000); 
+  next();
 })
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/api', apiRouter);
 app.use('/metrics', metricsRouter);
-app.use('/properties', propertiesRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
